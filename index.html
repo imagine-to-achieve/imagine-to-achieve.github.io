@@ -21,7 +21,6 @@
     <a href="#method">Method</a>
     <a href="#demos">Demos</a>
     <a href="#results">Results</a>
-    <a href="#analysis">Analysis</a>
   </nav>
   <span class="submission-badge">Anonymous submission</span>
 </header>
@@ -152,16 +151,6 @@
       </div>
       <p id="play-status" class="caption" role="status"></p>
       <noscript><p class="caption">JavaScript is required for the task selector. All paper results remain available in the tables below and in the PDF.</p></noscript>
-
-      <div class="highlight-reel">
-        <h3>Highlight reel</h3>
-        <div class="hero-films">
-          <figure><video autoplay muted playsinline loop preload="auto" poster="assets/rl-laptop.jpg" src="media/rl-laptop.mp4" aria-label="Ours RL closing a laptop, accelerated video"></video><figcaption><span>Close the laptop</span><small>Ours (RL) &middot; accelerated</small></figcaption></figure>
-          <figure><video autoplay muted playsinline loop preload="auto" poster="assets/rl-yellow.jpg" src="media/rl-yellow.mp4" aria-label="Ours RL placing the yellow duck, accelerated video"></video><figcaption><span>Place the yellow duck</span><small>Ours (RL) &middot; accelerated</small></figcaption></figure>
-          <figure><video autoplay muted playsinline loop preload="auto" poster="assets/rl-cup.jpg" src="media/rl-cup.mp4" aria-label="Ours RL nesting cups, accelerated video"></video><figcaption><span>Nest the cups</span><small>Ours (RL) &middot; accelerated</small></figcaption></figure>
-        </div>
-        <p class="caption">Accelerated recordings of the post-training policy. The speed factor is not specified; use the side-by-side comparison above for timing.</p>
-      </div>
     </div>
   </section>
 
@@ -227,49 +216,6 @@
       </table>
     </div>
     <p class="caption table-note">Mean completion time and control step count decrease on all four tasks. Medians follow the same trend except on duck, where they are essentially unchanged &mdash; there the mean reduction comes from fewer long, hesitant trials rather than a uniformly faster policy.</p>
-  </section>
-
-  <!-- =============================== ANALYSIS ============================= -->
-  <section class="analysis-band" id="analysis" aria-labelledby="analysis-label">
-    <div class="wrap section">
-      <div class="section-heading">
-        <p class="eyebrow" id="analysis-label">ANALYSIS</p>
-        <h2>What the feedback signal does</h2>
-        <p>Ablations on the reward composition, and how the feedback relates to predicted success.</p>
-      </div>
-
-      <figure class="wide-figure">
-        <a href="assets/fig6-ablation.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig6-ablation.webp" width="2000" height="401" loading="lazy" alt="Trajectory, terminal-goal and combined rewards each rise under their own objective over FPO updates; classifier-estimated model-space success improves early then declines."></a>
-        <figcaption>Reward ablation on the close-laptop task, varying only the reward composition. Left three: each reward rises under its own objective, so both feedback types provide useful optimization signal individually. Right: classifier-estimated model-space success, which improves early then diverges. <span class="fig-ref">Paper, Fig. 6</span></figcaption>
-      </figure>
-
-      <div class="analysis-grid">
-        <article>
-          <h3>Two complementary roles</h3>
-          <p>Trajectory feedback constrains consistency during the intermediate predicted evolution, whereas terminal feedback focuses on the final predicted goal state. Combining feedback from both the process and the endpoint yields a more comprehensive optimization signal.</p>
-        </article>
-        <article>
-          <h3>Feedback orders rollouts by predicted success</h3>
-          <p>Successful rollouts concentrate at high predicted success probability and at the upper end of the reward range, with failures at the opposite corner and similar separation in the training and evaluation splits.</p>
-        </article>
-      </div>
-
-      <div class="figure-pair">
-        <figure>
-          <a href="assets/fig7-reward-dist.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig7-reward-dist.webp" width="1015" height="810" loading="lazy" alt="Box plots of reward distributions for successful and failed rollouts across laptop, duck, Push-T and cup tasks."></a>
-          <figcaption>Reward distributions for successful (green) and failed (red) rollouts. Successes score higher throughout, but the margin is clear on laptop and cup and largely overlapping on duck and Push-T. <span class="fig-ref">Paper, Fig. 7</span></figcaption>
-        </figure>
-        <figure>
-          <a href="assets/fig8-reward-success.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig8-reward-success.webp" width="1035" height="520" loading="lazy" alt="Scatter plots of combined reward against predicted success probability on the training and evaluation sets; successes cluster at high reward and high probability."></a>
-          <figcaption>Combined reward versus predicted success probability on the training (left) and evaluation (right) sets; each point is one rollout. Diagonals are visual guides only. <span class="fig-ref">Paper, Fig. 8</span></figcaption>
-        </figure>
-      </div>
-
-      <aside class="caveat">
-        <h3>Model-space success is not real-robot success</h3>
-        <p>The success curves in the ablation and the probabilities in the scatter plots come from a classifier applied to the frozen world model&rsquo;s predicted terminal states. They measure completion <em>within model space</em> and do not directly track real-robot performance &mdash; the late decline may reflect a mismatch between the optimized policy and the frozen world model&rsquo;s prediction distribution rather than genuine degradation. We use model-space success only to compare optimization signals during training. Every real-robot number on this page comes from physical UR5 trials.</p>
-      </aside>
-    </div>
   </section>
 
   <!-- ================================ PAPER =============================== -->

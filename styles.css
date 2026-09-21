@@ -9,7 +9,7 @@
 
 /* =========================================================================
    Structure added in the site restructure: badge, teaser, split, feedback,
-   video overview, task tabs + chips, stat tiles, wide figures, caveat.
+   video overview, task tabs + chips, stat tiles, wide figures.
    ========================================================================= */
 
 /* --- top bar ------------------------------------------------------------ */
@@ -17,8 +17,8 @@
 
 /* --- shared figure furniture -------------------------------------------- */
 .fig-ref{display:inline-block;margin-left:4px;font-size:12px;font-weight:600;letter-spacing:.4px;color:var(--accent);white-space:nowrap}
-.wide-figure,.teaser,.tasks-strip,.split figure,.figure-pair figure{border:1px solid var(--line);border-radius:10px;padding:22px;background:#fff}
-.wide-figure figcaption,.teaser figcaption,.tasks-strip figcaption,.split figcaption,.figure-pair figcaption{margin-top:16px;text-align:left}
+.wide-figure,.teaser,.tasks-strip,.split figure{border:1px solid var(--line);border-radius:10px;padding:22px;background:#fff}
+.wide-figure figcaption,.teaser figcaption,.tasks-strip figcaption,.split figcaption{margin-top:16px;text-align:left}
 .wide-figure{margin-top:44px}
 .subhead{font-size:21px;margin:52px 0 18px}
 .table-note{margin-top:16px;max-width:900px}
@@ -28,8 +28,22 @@
 .teaser figcaption{text-align:left}
 
 /* --- overview metrics --------------------------------------------------- */
-.abstract-band .metrics{margin-top:34px;padding-bottom:0;border-top:1px solid #dfe8e8}
-.abstract-band .metrics p{text-align:center}
+/* .metrics used to live inside .hero, which centred it. In the abstract band the
+   numbers fell back to left while the labels were centred, so centre the lot. */
+/* .metrics used to live inside .hero, which centred it. In the abstract band the
+   numbers fell back to left while the labels were centred, so centre the lot.
+   minmax(0,1fr) keeps the three columns equal — plain 1fr lets the longest
+   label widen its own column. */
+.abstract-band .metrics{margin-top:38px;padding:32px 0 0;border-top:1px solid #dfe8e8;text-align:center;grid-template-columns:repeat(3,minmax(0,1fr))}
+.abstract-band .metrics>div{padding-inline:14px}
+.abstract-band .metrics strong{display:block;line-height:1.1}
+.abstract-band .metrics p{text-align:center;max-width:22ch;margin-inline:auto}
+@media(max-width:560px){
+  .abstract-band .metrics{grid-template-columns:1fr;gap:20px;padding-top:26px}
+  .abstract-band .metrics>div{padding-inline:0}
+  .abstract-band .metrics>div+div{border-left:0;border-top:1px solid var(--line);padding-top:20px}
+  .abstract-band .metrics p{max-width:30ch;font-size:13px}
+}
 
 /* --- video overview ----------------------------------------------------- */
 .video-overview{max-width:960px;margin-inline:auto}
@@ -87,31 +101,21 @@
 .demo-footer .caption{margin:0}
 
 /* --- demos: highlight reel ------------------------------------------------ */
-.highlight-reel{margin-top:56px;padding-top:42px;border-top:1px solid #e0e9e9}
-.highlight-reel h3{text-align:center;font-size:20px;margin-bottom:22px}
-.highlight-reel .caption{text-align:center;max-width:720px;margin:18px auto 0}
 
 /* --- results: table II row grouping --------------------------------------- */
 tr.rl-row>td{border-bottom:2px solid #e3ebec}
 tbody tr:last-child>*{border-bottom:0}
 
 /* --- analysis ------------------------------------------------------------- */
-.analysis-band{background:var(--soft);border-top:1px solid #e6eded;border-bottom:1px solid #e6eded}
-.analysis-band .wide-figure,.analysis-band .figure-pair figure{background:#fff}
-.figure-pair{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:38px;align-items:start}
-.caveat{margin-top:44px;background:#fff;border:1px solid #d9e4e5;border-left:4px solid var(--accent);border-radius:10px;padding:26px 30px}
-.caveat h3{font-size:18px;margin-bottom:10px}
-.caveat p{font-size:15px;color:#4d585e;line-height:1.75;margin:0}
 
 /* --- paper callout -------------------------------------------------------- */
 .bibtex-note{margin-top:20px}
 
 /* --- responsive ----------------------------------------------------------- */
 @media(max-width:980px){
-  .split,.panel-head,.feedback-grid,.figure-pair{grid-template-columns:1fr}
+  .split,.panel-head,.feedback-grid{grid-template-columns:1fr}
   .split{gap:26px;margin-bottom:44px}
   .panel-head{gap:24px}
-  .figure-pair{gap:18px;margin-top:26px}
 }
 @media(max-width:760px){
   /* The base stylesheet hides the first two nav links on small screens. With five
@@ -125,7 +129,7 @@ tbody tr:last-child>*{border-bottom:0}
   .wide-figure a{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .wide-figure a img{width:940px;max-width:none}
   .wide-figure figcaption::after{content:" Scroll the figure sideways, or tap it to open the full-size image.";color:var(--accent)}
-  .wide-figure,.teaser,.tasks-strip,.split figure,.figure-pair figure{padding:12px}
+  .wide-figure,.teaser,.tasks-strip,.split figure{padding:12px}
   .wide-figure{margin-top:28px}
   .subhead{font-size:19px;margin:34px 0 14px}
   .tabs{gap:7px;margin-bottom:12px}
@@ -135,8 +139,6 @@ tbody tr:last-child>*{border-bottom:0}
   .feedback-grid article{padding:20px 21px}
   .stat-tile strong{font-size:20px}
   .demo-footer{flex-direction:column;gap:14px}
-  .highlight-reel{margin-top:38px;padding-top:30px}
-  .caveat{padding:20px 21px;margin-top:30px}
   .tasks-strip{margin-bottom:26px}
 }
 @media(max-width:430px){

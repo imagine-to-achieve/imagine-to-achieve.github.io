@@ -282,30 +282,3 @@ if (repositoryUrl.startsWith('https://')) {
   codeLink.addEventListener('click', event => event.preventDefault());
 }
 
-/* ----------------------------- highlight reel ---------------------------- */
-document.querySelectorAll('.hero-films video').forEach(video => {
-  const toggle = document.createElement('button');
-  toggle.type = 'button';
-  toggle.className = 'film-toggle';
-  const taskName = video.closest('figure').querySelector('figcaption span').textContent;
-  const updateToggle = () => {
-    toggle.textContent = video.paused ? 'Play' : 'Pause';
-    toggle.setAttribute('aria-label', `${video.paused ? 'Play' : 'Pause'} ${taskName.toLowerCase()} video`);
-    toggle.classList.toggle('needs-play', video.paused);
-  };
-  toggle.addEventListener('click', () => {
-    if (video.paused) video.play().catch(updateToggle);
-    else video.pause();
-  });
-  video.addEventListener('play', updateToggle);
-  video.addEventListener('pause', updateToggle);
-  video.closest('figure').append(toggle);
-  video.muted = true;
-  if (reducedMotion.matches) {
-    video.autoplay = false;
-    video.pause();
-  } else {
-    video.play().catch(updateToggle);
-  }
-  updateToggle();
-});
