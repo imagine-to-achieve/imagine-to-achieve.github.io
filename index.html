@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Learning to align robot actions with visual plans through world-model feedback. Supplementary material for anonymous ICRA 2027 review.">
+  <title>Achieve What You Imagined | Anonymous ICRA 2027 Submission</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23166d77'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="wordmark" href="#top">IMAGINE <span>&rarr;</span> ACHIEVE</a>
+  <nav aria-label="Main navigation">
+    <a href="#overview">Overview</a>
+    <a href="#method">Method</a>
+    <a href="#demos">Demos</a>
+    <a href="#results">Results</a>
+    <a href="#analysis">Analysis</a>
+  </nav>
+  <span class="submission-badge">Anonymous submission</span>
+</header>
+
+<main id="main">
+
+  <!-- ================================ HERO ================================ -->
+  <section class="hero wrap" id="top" aria-labelledby="title">
+    <p class="eyebrow">WORLD-MODEL FEEDBACK FOR ROBOT POLICIES</p>
+    <h1 id="title">Achieve What You Imagined<span>Learning to Align Actions<br class="desktop-break"> with Visual Plans</span></h1>
+    <!-- Reserved for the author list when it is ready to be displayed. -->
+    <div class="authors" aria-hidden="true"></div>
+    <p class="hero-summary">A robot can imagine success before it can act reliably.<br> We turn that gap into a training signal &mdash; with no online robot interaction and no task-specific reward model.</p>
+    <div class="hero-actions">
+      <a class="button primary" href="paper/anonymous-paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Read the paper</a>
+      <a class="button code-button" id="code-link" role="link" aria-disabled="true" tabindex="0" data-repository-url="" title="Code link coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6M14 3l-4 18"/></svg>Code</a>
+      <a class="button" href="#video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 11 7-11 7z"/></svg>Watch the overview</a>
+    </div>
+    <figure class="teaser">
+      <a href="assets/fig1-gap.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig1-gap.webp" width="1035" height="740" alt="From the same instruction and initial state, the model imagines grasping the red duck and placing it in the basket, while the actions it generates grasp nothing."></a>
+      <figcaption><strong>The imagination&ndash;consequence gap.</strong> From the same instruction and initial state, the world&ndash;action model imagines a trajectory that completes the task, but its generated actions fail to execute it. The model already knows what success looks like before it can act on it &mdash; we turn that gap into a training signal. <span class="fig-ref">Paper, Fig. 1</span></figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================== OVERVIEW ============================== -->
+  <section class="abstract-band" id="overview" aria-labelledby="overview-label">
+    <div class="narrow">
+      <p class="eyebrow" id="overview-label">THE IDEA</p>
+      <h2>Visual imagination as supervision</h2>
+      <p>World-action models jointly predict future visual trajectories and robot actions, yet what they imagine can differ substantially from what their actions achieve. We observe that these models can imagine successful task completion before learning reliable actions.</p>
+      <p>We treat the imagined video as a goal-conditioned visual plan rather than a directly executable one. A frozen, action-conditioned world model predicts the consequences of the proposed actions. Feedback combines <strong>trajectory consistency</strong> between the two predictions with <strong>terminal-goal alignment</strong>, and Flow Policy Optimization updates only the action head. This requires neither online robot interaction during post-training nor a separately trained task-specific reward model.</p>
+      <p>Across four real-world UR5 manipulation tasks, the method raises mean success from 43.4% to 75.1%, compared with 61.4% for &pi;<sub>0.5</sub>. The results suggest that cross-model prediction discrepancy can provide useful feedback for improving robot policies.</p>
+    </div>
+    <div class="narrow">
+      <div class="metrics">
+        <div><strong>75.1<span>%</span></strong><p>Mean real-robot success after RL</p></div>
+        <div><strong>+31.7<span> pp</span></strong><p>Improvement over SFT initialization</p></div>
+        <div><strong>41<span> pt</span></strong><p>Model-space gap the feedback exploits</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ VIDEO =============================== -->
+  <section class="wrap section" id="video" aria-labelledby="video-label">
+    <div class="section-heading">
+      <p class="eyebrow" id="video-label">SEE IT END TO END</p>
+      <h2>Video overview</h2>
+      <p>From the imagination&ndash;consequence gap to the four real-robot tasks.</p>
+    </div>
+    <figure class="video-overview">
+      <video controls preload="none" playsinline poster="assets/overview.jpg" src="media/overview.mp4" aria-label="Video overview of the method and experiments"></video>
+      <figcaption>2 min 58 s &middot; English narration with on-screen captions &middot; <a href="media/overview.mp4" download>Download video</a></figcaption>
+    </figure>
+  </section>
+
+  <!-- ================================ METHOD ============================== -->
+  <section class="wrap section" id="method" aria-labelledby="method-label">
+    <div class="section-heading">
+      <p class="eyebrow" id="method-label">METHOD</p>
+      <h2>From visual plans to better actions</h2>
+      <p>Imagine a trajectory. Predict its consequences. Learn from the difference.</p>
+    </div>
+
+    <div class="split">
+      <figure>
+        <a href="assets/fig5-model-gap.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig5-model-gap.webp" width="1020" height="505" loading="lazy" alt="During supervised fine-tuning the imagined video reaches 50 percent task completion while the action consequence stream stays between 6 and 13 percent."></a>
+        <figcaption>Model-space success during SFT, both streams scored by the same frozen classifier on the terminal frame. <span class="fig-ref">Paper, Fig. 5</span></figcaption>
+      </figure>
+      <div class="split-text">
+        <h3>The gap is measurable, and it widens</h3>
+        <p>As supervised fine-tuning proceeds, the imagined video increasingly depicts task completion, rising from 18% to 50%. The consequences predicted from the action chunks generated alongside it stay at 6&ndash;13% throughout.</p>
+        <p>Both scores come from the same classifier and the same initial states, so the 41-point gap at 15k steps reflects inconsistency between two model-generated predictions rather than a difference in evaluation protocol. That discrepancy is what the feedback signal measures.</p>
+      </div>
+    </div>
+
+    <figure class="pipeline">
+      <a href="assets/pipeline.webp" target="_blank" rel="noopener" aria-label="Open the full-size method diagram">
+        <img src="assets/pipeline.webp" width="2060" height="845" loading="lazy" alt="A world-action model generates a visual plan and actions. A frozen world model predicts action consequences. Trajectory and goal similarities provide rewards for FPO updates to the action head.">
+      </a>
+      <figcaption>Framework overview. The video generator and the action-conditioned world model remain frozen; only the action head is updated. <span class="fig-ref">Paper, Fig. 2</span></figcaption>
+    </figure>
+
+    <div class="method-steps">
+      <article><span class="step">01 / IMAGINE</span><h3>Use the model&rsquo;s visual plan</h3><p>The world-action model jointly produces a future video and an action chunk from the current observation and instruction.</p></article>
+      <article><span class="step">02 / EVALUATE</span><h3>Predict what the actions do</h3><p>A frozen action-conditioned world model predicts the consequences of those actions and supplies the next observation, closing the rollout.</p></article>
+      <article><span class="step">03 / ALIGN</span><h3>Refine the action policy</h3><p>Flow Policy Optimization turns group-relative feedback into an update to the action head, retaining the native UniPC sampler.</p></article>
+    </div>
+
+    <div class="feedback">
+      <h3 class="feedback-title">Two feedback components</h3>
+      <div class="feedback-grid">
+        <article>
+          <span class="tag">TRAJECTORY CONSISTENCY</span>
+          <p>Frames are selected at matching timestamps from the imagined video and the action-conditioned rollout, and compared at matching resolution. The reward is the negative pixel MSE averaged over views &mdash; it constrains agreement along the predicted evolution.</p>
+        </article>
+        <article>
+          <span class="tag">TERMINAL-GOAL ALIGNMENT</span>
+          <p>The world model&rsquo;s final predicted frame is compared with a predefined visual goal reference for the task, preprocessed identically. This term applies at the final chunk and encourages progress toward the desired outcome.</p>
+        </article>
+      </div>
+      <p class="caption">Both predictive models stay frozen during optimization, so the policy cannot raise its reward by changing the models that produce it &mdash; only by changing its actions.</p>
+    </div>
+  </section>
+
+  <!-- ================================ DEMOS =============================== -->
+  <section class="demo-band" id="demos" aria-labelledby="demos-label">
+    <div class="wrap section">
+      <div class="section-heading">
+        <p class="eyebrow" id="demos-label">REAL-WORLD DEMONSTRATIONS</p>
+        <h2>See the actions, side by side</h2>
+        <p>Four manipulation tasks on a UR5. Compare our policy before and after RL against the &pi;<sub>0.5</sub> baseline.</p>
+      </div>
+
+      <figure class="tasks-strip">
+        <a href="assets/fig4-tasks.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig4-tasks.webp" width="1000" height="325" loading="lazy" alt="The four experimental setups: closing a laptop, placing a duck into a basket, pushing a T-shaped block, and nesting four cups."></a>
+        <figcaption>The four experimental tasks. We collect 40, 200, 150 and 100 demonstrations respectively; cup nesting has the longest horizon. <span class="fig-ref">Paper, Fig. 4</span></figcaption>
+      </figure>
+
+      <div class="tabs" role="tablist" aria-label="Manipulation task" id="task-tabs"></div>
+      <div class="chips" id="variant-chips" hidden></div>
+
+      <div class="panel-head" id="panel-head"></div>
+      <div class="comparison" id="comparison" aria-live="polite"></div>
+
+      <div class="demo-footer">
+        <button class="button" id="play-all" type="button">Play available videos</button>
+        <p class="caption" id="demo-caption">Qualitative examples from separate trials; initial states and video durations may differ, so these are not strictly paired comparisons. See the quantitative results below for aggregate performance.</p>
+      </div>
+      <p id="play-status" class="caption" role="status"></p>
+      <noscript><p class="caption">JavaScript is required for the task selector. All paper results remain available in the tables below and in the PDF.</p></noscript>
+
+      <div class="highlight-reel">
+        <h3>Highlight reel</h3>
+        <div class="hero-films">
+          <figure><video autoplay muted playsinline loop preload="auto" poster="assets/rl-laptop.jpg" src="media/rl-laptop.mp4" aria-label="Ours RL closing a laptop, accelerated video"></video><figcaption><span>Close the laptop</span><small>Ours (RL) &middot; accelerated</small></figcaption></figure>
+          <figure><video autoplay muted playsinline loop preload="auto" poster="assets/rl-yellow.jpg" src="media/rl-yellow.mp4" aria-label="Ours RL placing the yellow duck, accelerated video"></video><figcaption><span>Place the yellow duck</span><small>Ours (RL) &middot; accelerated</small></figcaption></figure>
+          <figure><video autoplay muted playsinline loop preload="auto" poster="assets/rl-cup.jpg" src="media/rl-cup.mp4" aria-label="Ours RL nesting cups, accelerated video"></video><figcaption><span>Nest the cups</span><small>Ours (RL) &middot; accelerated</small></figcaption></figure>
+        </div>
+        <p class="caption">Accelerated recordings of the post-training policy. The speed factor is not specified; use the side-by-side comparison above for timing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== RESULTS ============================== -->
+  <section class="wrap section" id="results" aria-labelledby="results-label">
+    <div class="section-heading">
+      <p class="eyebrow" id="results-label">QUANTITATIVE EVALUATION</p>
+      <h2>Higher success across all four tasks</h2>
+      <p>Real-robot success rates over the four UR5 manipulation tasks.</p>
+    </div>
+
+    <div class="table-scroll">
+      <table id="table-i">
+        <caption>Real-robot task success rates (%). All systems are adapted from the same task-specific UR5 demonstration split. The average gives equal weight to each task.</caption>
+        <thead>
+          <tr><th scope="col">Method</th><th scope="col">Laptop</th><th scope="col">Duck</th><th scope="col">Push-T</th><th scope="col">Cup</th><th scope="col">Avg.</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Ours (SFT)</th><td data-m="sft" data-t="laptop">22.0</td><td data-m="sft" data-t="duck">95.0</td><td data-m="sft" data-t="push">23.3</td><td data-m="sft" data-t="cup">33.3</td><td>43.4</td></tr>
+          <tr><th scope="row">Fast-WAM</th><td>16.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>4.0</td></tr>
+          <tr><th scope="row">VLA-JEPA</th><td>15.0</td><td>20.0</td><td>0.0</td><td>0.0</td><td>8.8</td></tr>
+          <tr><th scope="row">&pi;<sub>0.5</sub></th><td data-m="pi" data-t="laptop">56.7</td><td data-m="pi" data-t="duck">85.0</td><td data-m="pi" data-t="push">33.3</td><td data-m="pi" data-t="cup">70.6</td><td>61.4</td></tr>
+          <tr class="ours"><th scope="row">Ours (RL)</th><td data-m="rl" data-t="laptop">68.0</td><td data-m="rl" data-t="duck">100.0</td><td data-m="rl" data-t="push">48.9</td><td data-m="rl" data-t="cup">83.3</td><td>75.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="result-overview">
+      <div class="result-text">
+        <h3>Closing the imagination&ndash;action gap</h3>
+        <p>Post-training raises mean success from <strong>43.4% to 75.1%</strong>, a gain of 31.7 percentage points over the SFT initialization and 13.7 points over the strongest baseline, &pi;<sub>0.5</sub>.</p>
+        <p>Fast-WAM and VLA-JEPA were developed with substantially larger adaptation budgets than the 40&ndash;200 demonstrations per task available here, so their low scores indicate that the low-data regime is difficult rather than an inherent limitation of either method.</p>
+      </div>
+      <div class="bar-chart" role="img" aria-label="Mean real-robot success: Ours SFT 43.4 percent, pi 0.5 61.4 percent, Ours RL 75.1 percent">
+        <div class="bar-row"><span>Ours (SFT)</span><div><i style="--value:43.4%"></i></div><b>43.4%</b></div>
+        <div class="bar-row"><span>&pi;<sub>0.5</sub></span><div><i style="--value:61.4%"></i></div><b>61.4%</b></div>
+        <div class="bar-row highlight"><span>Ours (RL)</span><div><i style="--value:75.1%"></i></div><b>75.1%</b></div>
+      </div>
+    </div>
+
+    <figure class="wide-figure">
+      <a href="assets/fig3-alignment.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig3-alignment.webp" width="2000" height="528" loading="lazy" alt="Imagination and execution success rates before and after RL. Each point is one task and the diagonal marks perfect agreement; points move closer to the diagonal after post-training."></a>
+      <figcaption>Imagination and execution success rates before (left) and after (right) RL. Each point is one task; the diagonal marks perfect agreement, so distance below it is the imagination&ndash;consequence gap. Far right: a duck grasp that fails before RL and succeeds after. <span class="fig-ref">Paper, Fig. 3</span></figcaption>
+    </figure>
+
+    <h3 class="subhead">Execution also becomes more efficient</h3>
+    <div class="table-scroll">
+      <table>
+        <caption>Real-robot execution efficiency. Statistics use each policy&rsquo;s successful trials, so <i>n</i> differs between rows. Time includes inference waiting; control steps count executed steps.</caption>
+        <thead>
+          <tr><th scope="col">Task</th><th scope="col">Method</th><th scope="col"><i>n</i></th><th scope="col">Time (s) &darr;</th><th scope="col">Median</th><th scope="col">Steps &darr;</th><th scope="col">Median</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" rowspan="2">Laptop</th><td>SFT</td><td>11</td><td>46.1</td><td>40.8</td><td>123.6</td><td>113</td></tr>
+          <tr class="rl-row"><td>RL</td><td>34</td><td>41.4</td><td>39.7</td><td>111.4</td><td>107</td></tr>
+          <tr><th scope="row" rowspan="2">Duck</th><td>SFT</td><td>57</td><td>63.5</td><td>54.1</td><td>200.0</td><td>160</td></tr>
+          <tr class="rl-row"><td>RL</td><td>60</td><td>56.7</td><td>54.2</td><td>170.7</td><td>160</td></tr>
+          <tr><th scope="row" rowspan="2">Push-T</th><td>SFT</td><td>21</td><td>131.6</td><td>124.4</td><td>289.3</td><td>279</td></tr>
+          <tr class="rl-row"><td>RL</td><td>44</td><td>123.7</td><td>121.9</td><td>278.3</td><td>272</td></tr>
+          <tr><th scope="row" rowspan="2">Cup</th><td>SFT</td><td>10</td><td>206.0</td><td>196.7</td><td>667.6</td><td>632</td></tr>
+          <tr class="rl-row"><td>RL</td><td>25</td><td>171.3</td><td>173.4</td><td>500.0</td><td>496</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption table-note">Mean completion time and control step count decrease on all four tasks. Medians follow the same trend except on duck, where they are essentially unchanged &mdash; there the mean reduction comes from fewer long, hesitant trials rather than a uniformly faster policy.</p>
+  </section>
+
+  <!-- =============================== ANALYSIS ============================= -->
+  <section class="analysis-band" id="analysis" aria-labelledby="analysis-label">
+    <div class="wrap section">
+      <div class="section-heading">
+        <p class="eyebrow" id="analysis-label">ANALYSIS</p>
+        <h2>What the feedback signal does</h2>
+        <p>Ablations on the reward composition, and how the feedback relates to predicted success.</p>
+      </div>
+
+      <figure class="wide-figure">
+        <a href="assets/fig6-ablation.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig6-ablation.webp" width="2000" height="401" loading="lazy" alt="Trajectory, terminal-goal and combined rewards each rise under their own objective over FPO updates; classifier-estimated model-space success improves early then declines."></a>
+        <figcaption>Reward ablation on the close-laptop task, varying only the reward composition. Left three: each reward rises under its own objective, so both feedback types provide useful optimization signal individually. Right: classifier-estimated model-space success, which improves early then diverges. <span class="fig-ref">Paper, Fig. 6</span></figcaption>
+      </figure>
+
+      <div class="analysis-grid">
+        <article>
+          <h3>Two complementary roles</h3>
+          <p>Trajectory feedback constrains consistency during the intermediate predicted evolution, whereas terminal feedback focuses on the final predicted goal state. Combining feedback from both the process and the endpoint yields a more comprehensive optimization signal.</p>
+        </article>
+        <article>
+          <h3>Feedback orders rollouts by predicted success</h3>
+          <p>Successful rollouts concentrate at high predicted success probability and at the upper end of the reward range, with failures at the opposite corner and similar separation in the training and evaluation splits.</p>
+        </article>
+      </div>
+
+      <div class="figure-pair">
+        <figure>
+          <a href="assets/fig7-reward-dist.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig7-reward-dist.webp" width="1015" height="810" loading="lazy" alt="Box plots of reward distributions for successful and failed rollouts across laptop, duck, Push-T and cup tasks."></a>
+          <figcaption>Reward distributions for successful (green) and failed (red) rollouts. Successes score higher throughout, but the margin is clear on laptop and cup and largely overlapping on duck and Push-T. <span class="fig-ref">Paper, Fig. 7</span></figcaption>
+        </figure>
+        <figure>
+          <a href="assets/fig8-reward-success.webp" target="_blank" rel="noopener" aria-label="Open the full-size figure"><img src="assets/fig8-reward-success.webp" width="1035" height="520" loading="lazy" alt="Scatter plots of combined reward against predicted success probability on the training and evaluation sets; successes cluster at high reward and high probability."></a>
+          <figcaption>Combined reward versus predicted success probability on the training (left) and evaluation (right) sets; each point is one rollout. Diagonals are visual guides only. <span class="fig-ref">Paper, Fig. 8</span></figcaption>
+        </figure>
+      </div>
+
+      <aside class="caveat">
+        <h3>Model-space success is not real-robot success</h3>
+        <p>The success curves in the ablation and the probabilities in the scatter plots come from a classifier applied to the frozen world model&rsquo;s predicted terminal states. They measure completion <em>within model space</em> and do not directly track real-robot performance &mdash; the late decline may reflect a mismatch between the optimized policy and the frozen world model&rsquo;s prediction distribution rather than genuine degradation. We use model-space success only to compare optimization signals during training. Every real-robot number on this page comes from physical UR5 trials.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================================ PAPER =============================== -->
+  <section class="paper-callout narrow" id="paper">
+    <p class="eyebrow">PAPER &amp; SUPPLEMENTARY MATERIAL</p>
+    <h2>Achieve What You Imagined</h2>
+    <p>Learning to Align Actions with Visual Plans</p>
+    <a class="button primary" href="paper/anonymous-paper.pdf" target="_blank" rel="noopener">Read the paper <span aria-hidden="true">&#8599;</span></a>
+    <p class="caption bibtex-note">A citation entry will be added once the submission is de-anonymized.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>Anonymous submission under review. This page contains no author, affiliation or institutional information.</p>
+  <p>All videos are supplementary material for the paper. Real-robot recordings are from a UR5 platform.</p>
+</footer>
+</body>
+</html>
